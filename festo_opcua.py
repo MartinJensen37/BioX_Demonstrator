@@ -26,6 +26,12 @@ class simpleConnect():
         Conveyor.set_value(ua.Variant(True, ua.VariantType.Boolean))
         simpleConnect.disconnect(self)
 
+    def startConveyor(self, ip, port=4840):
+        simpleConnect.connect(self, ip, port)
+        Conveyor = self.client.get_node('ns=2;s=|var|CECC-LK.Application.FBs.stpStopper1.convConveyor.xRight')
+        Conveyor.set_value(ua.Variant(True, ua.VariantType.Boolean))
+        simpleConnect.disconnect(self)
+
     def stopConveyor(self, ip, port=4840):
         simpleConnect.connect(self, ip, port)
         Conveyor = self.client.get_node('ns=2;s=|var|CECC-LK.Application.FBs.stpStopper1.convConveyor.xRight')
@@ -48,12 +54,13 @@ class simpleConnect():
         simpleConnect.connect(self, ip, port)
         read = self.client.get_node('ns=2;s=|var|CECC-LK.Application.FBs.stpStopper1.stpStopper.stManualControl.xReadRfid')
         read.set_value(ua.Variant(True, ua.VariantType.Boolean))
-        time.sleep(1)
+        time.sleep(0.1)
         read.set_value(ua.Variant(False, ua.VariantType.Boolean))
         id = self.client.get_node('ns=2;s=|var|CECC-LK.Application.FBs.stpStopper1.stpStopper.stRfidVisu.uiCarrierID').get_value()
         simpleConnect.disconnect(self)
         return id
         # ns=2;s=|var|CECC-LK.Application.FBs.stpStopper1.stpStopper.stRfidData.uiCarrierID
+        
     def writeCarrierID(self, ip, num_id, port=4840):
         simpleConnect.connect(self, ip, port)
         id = self.client.get_node('ns=2;s=|var|CECC-LK.Application.FBs.stpStopper1.stpStopper.stRfidVisu.uiCarrierID')
