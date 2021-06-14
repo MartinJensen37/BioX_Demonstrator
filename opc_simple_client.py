@@ -33,18 +33,26 @@ try:
             if STPLC_id.get()['CheckCarrier'] == True:
                 STPLC_id.update({'CarrierID': festo_connection.getCarrierID(ip)})
                 print('This is the carrierID for {}@{}: '.format(plc_id, ip), festo_connection.getCarrierID(ip))
-                festo_connection.releaseStopper(ip)
-                time.sleep(0.2)
-                festo_connection.engageStopper(ip)
+                #festo_connection.releaseStopper(ip)
+                #time.sleep(0.2)
+                #festo_connection.engageStopper(ip)
 
-            elif STPLC_id.get()['CheckCarrier'] == False:
-                festo_connection.engageStopper(ip)
+            #elif STPLC_id.get()['CheckCarrier'] == False:
+            #    festo_connection.engageStopper(ip)
 
             if STPLC_id.get()['StartConveyor'] == True:
                 festo_connection.startConveyor(ip)
 
             elif STPLC_id.get()['StartConveyor'] == False:
                 festo_connection.stopConveyor(ip)
+
+            if STPLC_id.get()['ReleaseStopper'] == True:
+                festo_connection.releaseStopper(ip)
+                time.sleep(0.2)
+                festo_connection.engageStopper(ip)
+                STPLC_id.update({'ReleaseStopper': False})
+            #elif STPLC_id.get()['ReleaseStopper'] == False:
+            #    festo_connection.engageStopper(ip)
         
 except KeyboardInterrupt:
         print('interrupted!')
