@@ -40,8 +40,10 @@ class simpleConnect():
 
     def releaseStopper(self, ip, port=4840):
         simpleConnect.connect(self, ip, port)
-        stopper = self.client.get_node('ns=2;s=|var|CECC-LK.Application.FBs.stpStopper1.stpStopper.cpfssStopper.xReleaseStopper')
-        stopper.set_value(ua.Variant(True, ua.VariantType.Boolean))
+        check = self.client.get_node('ns=2;s=|var|CECC-LK.Application.FBs.stpStopper1.stpStopper.cpfssStopper.xCarrierAvailable').get_value()
+        if check is True:
+            stopper = self.client.get_node('ns=2;s=|var|CECC-LK.Application.FBs.stpStopper1.stpStopper.cpfssStopper.xReleaseStopper')
+            stopper.set_value(ua.Variant(True, ua.VariantType.Boolean))
         simpleConnect.disconnect(self)
 
     def engageStopper(self, ip, port=4840):
