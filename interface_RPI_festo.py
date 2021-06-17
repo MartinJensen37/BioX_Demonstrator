@@ -90,5 +90,3 @@ while True:
 
 window.close()
 
-print('test')
-
