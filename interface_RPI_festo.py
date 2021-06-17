@@ -30,11 +30,16 @@ def SetLED(window, key, color):
     graph.erase()
     graph.draw_circle((0, 0), 16, fill_color=color, line_color=color)
 
-layout = [[sg.Text('PLC', size=(17, 1)), sg.Text('Status'), sg.Text('on/off')],
-          [sg.Text('STPLC_08 Conveyor', size=(17, 1)), LEDIndicator('STPLC_08'), sg.Text('', size=(8, 1)), sg.Button('', image_filename="../on-off1.PNG", button_color='white', image_size=(28,28), key=('StartConveyor', 'STPLC_08'))],
-          [sg.Text('STPLC_09 Conveyor', size=(17, 1)), LEDIndicator('STPLC_09'), sg.Text('', size=(8, 1)), sg.Button('', image_filename="../on-off1.PNG", button_color='white', image_size=(28,28), key=('StartConveyor', 'STPLC_09'))],
-          [sg.Text('Stopper 1', size=(17, 1)), LEDIndicator('STPLC_08_stp'), sg.Text('', size=(8, 1)), sg.Button('', image_filename="../on-off1.PNG", button_color='white', image_size=(28,28), key=('ReleaseStopper', 'STPLC_08'))],
-          [sg.Text('Stopper 2', size=(17, 1)), LEDIndicator('STPLC_09_stp'), sg.Text('', size=(8, 1)), sg.Button('', image_filename="../on-off1.PNG", button_color='white', image_size=(28,28), key=('ReleaseStopper', 'STPLC_09'))],
+carrier_id_STPLC_08 = 0
+carrier_id_STPLC_09 = 0
+
+layout = [[sg.Text('Name', size=(17, 1)), sg.Text('Status'), sg.Text('on/off')],
+          [sg.Text('STPLC_08 Conveyor', size=(18, 1)), LEDIndicator('STPLC_08'), sg.Text('', size=(7, 1)), sg.Button('', image_filename="../on-off1.PNG", button_color='white', image_size=(28,28), key=('StartConveyor', 'STPLC_08'))],
+          [sg.Text('STPLC_09 Conveyor', size=(18, 1)), LEDIndicator('STPLC_09'), sg.Text('', size=(7, 1)), sg.Button('', image_filename="../on-off1.PNG", button_color='white', image_size=(28,28), key=('StartConveyor', 'STPLC_09'))],
+          [sg.Text('STPLC_08 Stopper', size=(18, 1)), LEDIndicator('STPLC_08_stp'), sg.Text('', size=(7, 1)), sg.Button('', image_filename="../on-off1.PNG", button_color='white', image_size=(28,28), key=('ReleaseStopper', 'STPLC_08'))],
+          [sg.Text('STPLC_09 Stopper', size=(18, 1)), LEDIndicator('STPLC_09_stp'), sg.Text('', size=(7, 1)), sg.Button('', image_filename="../on-off1.PNG", button_color='white', image_size=(28,28), key=('ReleaseStopper', 'STPLC_09'))],
+          [sg.Text('STPLC_08 Carrier ID', size=(19, 1)), sg.Text(carrier_id_STPLC_08, key='STPLC_08_ID')],
+          [sg.Text('STPLC_09 Carrier ID', size=(19, 1)), sg.Text(carrier_id_STPLC_08, key='STPLC_09_ID')],
           [sg.Button('Exit')]]
 
 window = sg.Window('Festo Status Interface', layout, default_element_size=(12, 1), auto_size_text=False, finalize=True)
@@ -49,12 +54,13 @@ while True:
     if value is None:
         break
 
+    # Button for releasing the stopper for each plc
     if event[0] is 'ReleaseStopper':
         STPLC_id = PLC_ref.child(event[1])
         STPLC_id.update({event[0]: True})
         SetLED(window, plc_id, 'green')
 
-
+    # Starting or stopping the conveyor with the button
     if event[0] is 'StartConveyor':
         message = ref.get()
         print(message['PLC'][event[1]]['StartConveyor'])
@@ -65,6 +71,7 @@ while True:
             STPLC_id = PLC_ref.child(event[1])
             STPLC_id.update({event[0]: False})
 
+    # Update status LEDs for the basic plc functions
     status = ref.get()
     for plc_id in plc_ids:
         if status['PLC'][plc_id]['StartConveyor'] is True:
@@ -75,6 +82,11 @@ while True:
             SetLED(window, plc_id + '_stp', 'green')
         elif status['PLC'][plc_id]['ReleaseStopper'] is False:
             SetLED(window, plc_id + '_stp', 'red')
+    # Check carrier ids for each plc
+    carrier_id_STPLC_08 = status['PLC'][plc_ids[0]]['CarrierID']
+    carrier_id_STPLC_09 = status['PLC'][plc_ids[1]]['CarrierID']
+    window['STPLC_08_ID'].update(carrier_id_STPLC_08)
+    window['STPLC_09_ID'].update(carrier_id_STPLC_09)
 
 window.close()
 
